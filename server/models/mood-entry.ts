@@ -1,5 +1,5 @@
 import { Model, DataTypes } from 'sequelize';
-import { sequelize } from './db';
+import sequelize from './db';
 
 export class MoodEntry extends Model {
   declare id: number;
