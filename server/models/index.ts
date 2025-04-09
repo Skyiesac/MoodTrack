@@ -1,7 +1,7 @@
 import { User } from './user';
 import { MoodEntry } from './mood-entry';
 import { Tag } from './tag';
-import { sequelize } from './db';
+import sequelize from './db';
 
 // Define relationships
 User.hasMany(MoodEntry, {
