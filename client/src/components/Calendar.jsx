@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Calendar as CalendarUI } from "@/components/ui/calendar";
 import { Card } from "@/components/ui/card";
-import "../styles/Calendar.css";
+import "../components/ui/calendar";
 
 const moodEmojis = {
   great: "😄",
