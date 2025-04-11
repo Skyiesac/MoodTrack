@@ -7,7 +7,7 @@ dotenv.config();
 console.log('Environment Variables:', process.env);
 
 // Ensure the DATABASE_URL environment variable is set
-const databaseUrl = process.env.DATABASE_URL;
+const databaseUrl = process.env.DATABASE_URL || '';
 
 if (!databaseUrl) {
   console.error('DATABASE_URL is not defined or is invalid');
