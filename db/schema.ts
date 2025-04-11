@@ -1,5 +1,5 @@
 import { DataTypes, Model } from "sequelize";
-import { sequelize } from "./db"; // Ensure `sequelize` is imported from your DB configuration
+import { sequelize } from "../db"; // Ensure `sequelize` is imported from your DB configuration
 
 // Users table
 export class User extends Model {}
