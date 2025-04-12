@@ -7,11 +7,10 @@ dotenv.config();
 console.log('Environment Variables:', process.env);
 
 // Ensure the DATABASE_URL environment variable is set
-const databaseUrl = process.env.DATABASE_URL || '';
+const databaseUrl = process.env.DATABASE_URL || 'postgres://user:password@localhost:5432/mydatabase';
 
-if (!databaseUrl) {
-  console.error('DATABASE_URL is not defined or is invalid');
-  throw new Error('DATABASE_URL is not defined or is invalid');
+if (!process.env.DATABASE_URL) {
+  console.warn('DATABASE_URL is not defined. Using default database URL.');
 }
 
 console.log('Database URL:', databaseUrl);
