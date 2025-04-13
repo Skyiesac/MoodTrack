@@ -23,7 +23,7 @@ export default defineConfig({
   },
   server: {
     open: true, // Automatically open the browser when the server starts
-    port: 3000, // Ensure the Vite dev server runs on port 3000
+    port: 5173, // Ensure the Vite dev server runs on port 5173
     proxy: {
       "/api": {
         target: "http://localhost:3001", // Proxy API requests to the Express backend
