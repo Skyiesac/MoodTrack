@@ -2,13 +2,23 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useUser } from "@/hooks/use-user";
-import { insertUserSchema } from "../path/to/schema";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import type { InsertUser } from "@db/schema";
+import { z } from "zod"; // Import Zod for schema validation
+
+// Import or define InsertUser and schema properly
+const insertUserSchema = z.object({
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  email: z.string().email("Invalid email address"),
+  username: z.string().min(1, "Username is required"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
+type InsertUser = z.infer<typeof insertUserSchema>;
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -33,7 +43,7 @@ export default function AuthPage() {
         toast({
           variant: "destructive",
           title: "Error",
-          description: result.message,
+          description: result.message || "Something went wrong",
         });
         return;
       }
@@ -46,7 +56,7 @@ export default function AuthPage() {
       toast({
         variant: "destructive",
         title: "Error",
-        description: error.message,
+        description: error.message || "Unexpected error occurred",
       });
     }
   }

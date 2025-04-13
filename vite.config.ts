@@ -7,6 +7,7 @@ import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
 export default defineConfig({
   plugins: [react(), runtimeErrorOverlay(), themePlugin()],
   resolve: {
@@ -19,5 +20,16 @@ export default defineConfig({
   build: {
     outDir: path.resolve(__dirname, "dist/public"),
     emptyOutDir: true,
+  },
+  server: {
+    open: true, // Automatically open the browser when the server starts
+    port: 3000, // Ensure the Vite dev server runs on port 3000
+    proxy: {
+      "/api": {
+        target: "http://localhost:3001", // Proxy API requests to the Express backend
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
 });
