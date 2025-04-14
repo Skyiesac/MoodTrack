@@ -19,8 +19,12 @@ if (process.env.NODE_ENV === 'production') {
   app.use(csrf({ cookie: true }));
 } else {
   // In development, only use basic security
+  if (!process.env.CORS_ALLOWED_ORIGINS) {
+    throw new Error('CORS_ALLOWED_ORIGINS environment variable is required');
+  }
+
   app.use(cors({
-    origin: 'http://localhost:5182',
+    origin: process.env.CORS_ALLOWED_ORIGINS,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
@@ -104,7 +108,7 @@ const errorHandler = (err: any, _req: Request, res: Response, _next: NextFunctio
       serveStatic(app);
     }
 
-    const PORT = parseInt(process.env.PORT || '3003', 10);
+    const PORT = parseInt(process.env.PORT || '3002', 10);
     server.listen(PORT, '127.0.0.1', () => {
       log(`Server running on port ${PORT} in ${app.get("env")} mode`);
     });

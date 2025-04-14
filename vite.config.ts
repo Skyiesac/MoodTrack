@@ -22,10 +22,10 @@ export default defineConfig({
     emptyOutDir: true,
   },
   server: {
-    port: 5182,
+    port: 5184,
     proxy: {
       "/api": {
-        target: "http://127.0.0.1:3003",
+        target: "http://127.0.0.1:3002",
         changeOrigin: true,
         secure: false,
         ws: true,

@@ -68,7 +68,11 @@ const FALLBACK_QUOTES = [
   }
 ];
 
-const JWT_SECRET = process.env.JWT_SECRET || process.env.REPL_ID || "mood-tracker-secret";
+if (!process.env.JWT_SECRET) {
+  throw new Error('JWT_SECRET environment variable is required');
+}
+
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // Authentication middleware
 const authenticateToken: RequestHandler = async (req, res, next) => {
@@ -109,6 +113,31 @@ const authenticateToken: RequestHandler = async (req, res, next) => {
 export function registerRoutes(app: Express): Server {
   // Setup authentication routes
   setupAuth(app);
+
+  // Get current user endpoint
+  app.get("/api/user", authenticateToken, async (req, res) => {
+    try {
+      const user = await User.findByPk(req.tokenPayload!.id);
+
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      res.json({
+        id: user.id,
+        username: user.username,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email
+      });
+    } catch (error) {
+      logError('get_user', error);
+      res.status(500).json({
+        message: 'Failed to fetch user',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
 
   // External API: Get a random quote from Quotable API
   app.get("/api/quotes/random", authenticateToken, async (req, res) => {

@@ -179,38 +179,6 @@ export function setupAuth(app: Express) {
     }
   });
 
-  // Get current user endpoint
-  app.get("/api/user", async (req, res) => {
-    try {
-      const token = req.cookies.auth_token || req.headers.authorization?.split(' ')[1];
-
-      if (!token) {
-        return res.status(401).json({ message: 'Authentication required' });
-      }
-
-      const decoded = jwt.verify(token, JWT_SECRET) as { id: number };
-      const user = await User.findByPk(decoded.id);
-
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
-
-      res.json({
-        id: user.id,
-        username: user.username,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email
-      });
-    } catch (error) {
-      if (error instanceof jwt.JsonWebTokenError) {
-        return res.status(401).json({ message: 'Invalid or expired token' });
-      }
-      console.error('Error fetching user:', error);
-      res.status(500).json({ message: 'Internal server error' });
-    }
-  });
-
   // Logout endpoint
   app.post("/api/logout", (req, res) => {
     res.clearCookie('auth_token');
