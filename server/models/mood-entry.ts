@@ -1,5 +1,6 @@
-import { Model, DataTypes } from 'sequelize';
+import { Model, DataTypes, BelongsToManyAddAssociationsMixin, BelongsToManySetAssociationsMixin } from 'sequelize';
 import sequelize from './db';
+import { Tag } from './tag';
 
 export class MoodEntry extends Model {
   declare id: number;
@@ -9,6 +10,11 @@ export class MoodEntry extends Model {
   declare content: string;
   declare createdAt: Date;
   declare updatedAt: Date;
+
+  // Association methods
+  declare setTags: BelongsToManySetAssociationsMixin<Tag, number>;
+  declare addTags: BelongsToManyAddAssociationsMixin<Tag, number>;
+  declare tags?: Tag[];
 }
 
 MoodEntry.init({
@@ -52,7 +58,9 @@ MoodEntry.init({
   modelName: 'MoodEntry',
   tableName: 'mood_entries',
   timestamps: true,
-  underscored: true
+  underscored: true,
+  createdAt: 'created_at',
+  updatedAt: 'updated_at'
 });
 
 export type MoodEntryAttributes = typeof MoodEntry.prototype;
