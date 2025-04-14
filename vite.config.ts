@@ -22,14 +22,29 @@ export default defineConfig({
     emptyOutDir: true,
   },
   server: {
-    open: true, // Automatically open the browser when the server starts
-    port: 5173, // Ensure the Vite dev server runs on port 5173
+    port: 5173,
     proxy: {
       "/api": {
-        target: "http://localhost:3001", // Proxy API requests to the Express backend
+        target: "http://localhost:3002",
         changeOrigin: true,
         secure: false,
+        ws: true,
+        configure: (proxy, _options) => {
+          proxy.on('error', (err, _req, _res) => {
+            console.log('proxy error', err);
+          });
+          proxy.on('proxyReq', (proxyReq, req, _res) => {
+            console.log('Sending Request:', req.method, req.url);
+          });
+          proxy.on('proxyRes', (proxyRes, req, _res) => {
+            console.log('Received Response:', proxyRes.statusCode, req.url);
+          });
+        },
       },
+    },
+    cors: {
+      origin: true,
+      credentials: true,
     },
   },
 });

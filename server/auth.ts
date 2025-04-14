@@ -3,9 +3,25 @@ import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 import jwt from 'jsonwebtoken';
 import { User } from "./models/user";
+import rateLimit from 'express-rate-limit';
+import csrf from 'csurf';
+import cookieParser from 'cookie-parser';
 
 const scryptAsync = promisify(scrypt);
-const JWT_SECRET = process.env.JWT_SECRET || process.env.REPL_ID || "mood-tracker-secret";
+
+if (!process.env.JWT_SECRET) {
+  throw new Error('JWT_SECRET environment variable is required');
+}
+
+const JWT_SECRET = process.env.JWT_SECRET;
+const TOKEN_EXPIRY = '24h';
+
+// Rate limiting configuration
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // Limit each IP to 5 requests per windowMs
+  message: 'Too many login attempts, please try again later'
+});
 
 const crypto = {
   hash: async (password: string) => {
@@ -34,10 +50,24 @@ declare global {
 }
 
 export function setupAuth(app: Express) {
+  // Setup middleware
+  app.use(cookieParser());
+  app.use(csrf({ cookie: true }));
+
+  // CSRF error handler
+  app.use((err: any, req: any, res: any, next: any) => {
+    if (err.code !== 'EBADCSRFTOKEN') return next(err);
+    res.status(403).json({ message: 'Invalid CSRF token' });
+  });
+
   // Register endpoint
-  app.post("/api/register", async (req, res) => {
+  app.post("/api/register", authLimiter, async (req, res) => {
     try {
       const { username, password, email, firstName, lastName } = req.body;
+
+      if (!username || !password || !email || !firstName || !lastName) {
+        return res.status(400).json({ message: "All fields are required" });
+      }
 
       // Check if user already exists
       const existingUser = await User.findOne({
@@ -45,7 +75,7 @@ export function setupAuth(app: Express) {
       });
 
       if (existingUser) {
-        return res.status(400).send("Username already exists");
+        return res.status(400).json({ message: "Username already exists" });
       }
 
       // Check if email is already in use
@@ -54,7 +84,7 @@ export function setupAuth(app: Express) {
       });
 
       if (existingEmail) {
-        return res.status(400).send("Email already in use");
+        return res.status(400).json({ message: "Email already in use" });
       }
 
       // Hash the password
@@ -73,8 +103,16 @@ export function setupAuth(app: Express) {
       const token = jwt.sign(
         { id: newUser.id, username: newUser.username },
         JWT_SECRET,
-        { expiresIn: '24h' }
+        { expiresIn: TOKEN_EXPIRY }
       );
+
+      // Set token in HTTP-only cookie
+      res.cookie('auth_token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+      });
 
       return res.json({
         message: "Registration successful",
@@ -85,18 +123,23 @@ export function setupAuth(app: Express) {
           lastName: newUser.lastName,
           email: newUser.email
         },
-        token
+        token, // Still include token in response for legacy clients
+        csrfToken: req.csrfToken()
       });
     } catch (error) {
       console.error('Registration error:', error);
-      res.status(500).send("Internal server error");
+      res.status(500).json({ message: "Internal server error" });
     }
   });
 
   // Login endpoint
-  app.post("/api/login", async (req, res) => {
+  app.post("/api/login", authLimiter, async (req, res) => {
     try {
       const { username, password } = req.body;
+
+      if (!username || !password) {
+        return res.status(400).json({ message: "Username and password are required" });
+      }
 
       // Find user
       const user = await User.findOne({
@@ -104,21 +147,29 @@ export function setupAuth(app: Express) {
       });
 
       if (!user) {
-        return res.status(400).send("Incorrect username or password");
+        return res.status(400).json({ message: "Invalid credentials" });
       }
 
       // Verify password
       const isMatch = await crypto.compare(password, user.password);
       if (!isMatch) {
-        return res.status(400).send("Incorrect username or password");
+        return res.status(400).json({ message: "Invalid credentials" });
       }
 
       // Generate JWT token
       const token = jwt.sign(
         { id: user.id, username: user.username },
         JWT_SECRET,
-        { expiresIn: '24h' }
+        { expiresIn: TOKEN_EXPIRY }
       );
+
+      // Set token in HTTP-only cookie
+      res.cookie('auth_token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+      });
 
       return res.json({
         message: "Login successful",
@@ -129,46 +180,50 @@ export function setupAuth(app: Express) {
           lastName: user.lastName,
           email: user.email
         },
-        token
+        token, // Still include token in response for legacy clients
+        csrfToken: req.csrfToken()
       });
     } catch (error) {
       console.error('Login error:', error);
-      res.status(500).send("Internal server error");
+      res.status(500).json({ message: "Internal server error" });
     }
   });
 
   // Get current user endpoint
   app.get("/api/user", async (req, res) => {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
+    try {
+      const token = req.cookies.auth_token || req.headers.authorization?.split(' ')[1];
 
-    if (!token) {
-      return res.status(401).send('Access token required');
+      if (!token) {
+        return res.status(401).json({ message: 'Authentication required' });
+      }
+
+      const decoded = jwt.verify(token, JWT_SECRET) as { id: number };
+      const user = await User.findByPk(decoded.id);
+
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      res.json({
+        id: user.id,
+        username: user.username,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email
+      });
+    } catch (error) {
+      if (error instanceof jwt.JsonWebTokenError) {
+        return res.status(401).json({ message: 'Invalid or expired token' });
+      }
+      console.error('Error fetching user:', error);
+      res.status(500).json({ message: 'Internal server error' });
     }
+  });
 
-    jwt.verify(token, JWT_SECRET, async (err: any, decoded: any) => {
-      if (err) {
-        return res.status(403).send('Invalid or expired token');
-      }
-
-      try {
-        const user = await User.findByPk(decoded.id);
-
-        if (!user) {
-          return res.status(404).send('User not found');
-        }
-
-        res.json({
-          id: user.id,
-          username: user.username,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          email: user.email
-        });
-      } catch (error) {
-        console.error('Error fetching user:', error);
-        res.status(500).send('Internal server error');
-      }
-    });
+  // Logout endpoint
+  app.post("/api/logout", (req, res) => {
+    res.clearCookie('auth_token');
+    res.json({ message: "Logged out successfully" });
   });
 }
