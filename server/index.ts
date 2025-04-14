@@ -4,25 +4,31 @@ import { setupVite, serveStatic, log } from "./vite";
 import sequelize from "./models/db";
 import dotenv from "dotenv";
 import cors from 'cors';
-import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
 
 // Load environment variables from .env file
 dotenv.config();
 
 const app = express();
 
-// Security middleware
-app.use(helmet());
-app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? process.env.FRONTEND_URL || 'https://your-production-domain.com'
-    : 'http://localhost:5173',
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token'],
-  exposedHeaders: ['X-CSRF-Token']
-}));
+// Security middleware - disabled in development
+if (process.env.NODE_ENV === 'production') {
+  const helmet = require('helmet');
+  const csrf = require('csurf');
+  app.use(helmet());
+  app.use(csrf({ cookie: true }));
+} else {
+  // In development, only use basic security
+  app.use(cors({
+    origin: 'http://localhost:5182',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+    exposedHeaders: ['Set-Cookie']
+  }));
+}
 
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -61,11 +67,22 @@ app.use((req, res, next) => {
 const errorHandler = (err: any, _req: Request, res: Response, _next: NextFunction) => {
   console.error('Error:', err);
 
+  // Handle JWT errors
+  if (err.name === 'JsonWebTokenError' || err.name === 'TokenExpiredError') {
+    return res.status(401).json({
+      message: 'Authentication error',
+      details: err.message,
+      type: err.name
+    });
+  }
+
   const status = err.status || err.statusCode || 500;
   const message = err.message || "Internal Server Error";
 
   res.status(status).json({ 
     message,
+    details: err.details || err.message,
+    type: err.name,
     ...(process.env.NODE_ENV !== 'production' && { stack: err.stack })
   });
 };
@@ -87,8 +104,8 @@ const errorHandler = (err: any, _req: Request, res: Response, _next: NextFunctio
       serveStatic(app);
     }
 
-    const PORT = parseInt(process.env.PORT || '3002', 10);
-    server.listen(PORT, "0.0.0.0", () => {
+    const PORT = parseInt(process.env.PORT || '3003', 10);
+    server.listen(PORT, '127.0.0.1', () => {
       log(`Server running on port ${PORT} in ${app.get("env")} mode`);
     });
   } catch (error) {

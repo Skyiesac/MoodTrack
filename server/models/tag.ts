@@ -5,6 +5,7 @@ export class Tag extends Model {
   declare id: number;
   declare name: string;
   declare createdAt: Date;
+  declare updatedAt: Date;
 }
 
 Tag.init({
@@ -23,13 +24,21 @@ Tag.init({
     allowNull: false,
     defaultValue: DataTypes.NOW,
     field: 'created_at'
+  },
+  updatedAt: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW,
+    field: 'updated_at'
   }
 }, {
   sequelize,
   modelName: 'Tag',
   tableName: 'tags',
-  timestamps: false,
-  underscored: true
+  timestamps: true,
+  underscored: true,
+  createdAt: 'created_at',
+  updatedAt: 'updated_at'
 });
 
 export type TagAttributes = typeof Tag.prototype;

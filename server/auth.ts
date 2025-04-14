@@ -4,7 +4,6 @@ import { promisify } from "util";
 import jwt from 'jsonwebtoken';
 import { User } from "./models/user";
 import rateLimit from 'express-rate-limit';
-import csrf from 'csurf';
 import cookieParser from 'cookie-parser';
 
 const scryptAsync = promisify(scrypt);
@@ -52,16 +51,9 @@ declare global {
 export function setupAuth(app: Express) {
   // Setup middleware
   app.use(cookieParser());
-  app.use(csrf({ cookie: true }));
-
-  // CSRF error handler
-  app.use((err: any, req: any, res: any, next: any) => {
-    if (err.code !== 'EBADCSRFTOKEN') return next(err);
-    res.status(403).json({ message: 'Invalid CSRF token' });
-  });
 
   // Register endpoint
-  app.post("/api/register", authLimiter, async (req, res) => {
+  app.post("/api/register", async (req, res) => {
     try {
       const { username, password, email, firstName, lastName } = req.body;
 
@@ -110,7 +102,7 @@ export function setupAuth(app: Express) {
       res.cookie('auth_token', token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        sameSite: 'lax', // Changed to 'lax' for development
         maxAge: 24 * 60 * 60 * 1000 // 24 hours
       });
 
@@ -123,8 +115,7 @@ export function setupAuth(app: Express) {
           lastName: newUser.lastName,
           email: newUser.email
         },
-        token, // Still include token in response for legacy clients
-        csrfToken: req.csrfToken()
+        token
       });
     } catch (error) {
       console.error('Registration error:', error);
@@ -167,7 +158,7 @@ export function setupAuth(app: Express) {
       res.cookie('auth_token', token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        sameSite: 'lax', // Changed to 'lax' for development
         maxAge: 24 * 60 * 60 * 1000 // 24 hours
       });
 
@@ -180,8 +171,7 @@ export function setupAuth(app: Express) {
           lastName: user.lastName,
           email: user.email
         },
-        token, // Still include token in response for legacy clients
-        csrfToken: req.csrfToken()
+        token
       });
     } catch (error) {
       console.error('Login error:', error);
