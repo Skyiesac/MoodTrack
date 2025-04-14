@@ -1,10 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { InsertUser, SelectUser } from "@db/schema";
+import type { InsertUser, SelectUser } from "@/types/schema";
 
 type AuthResponse = {
   message: string;
   user: SelectUser;
   token: string;
+};
+
+type LoginCredentials = {
+  username: string;
+  password: string;
 };
 
 type RequestResult = {
@@ -18,18 +23,17 @@ type RequestResult = {
 async function handleRequest(
   url: string,
   method: string,
-  body?: InsertUser
+  body?: InsertUser | LoginCredentials
 ): Promise<RequestResult> {
   try {
-    const token = localStorage.getItem('auth_token');
     const headers: Record<string, string> = {
-      ...(body ? { "Content-Type": "application/json" } : {}),
-      ...(token ? { "Authorization": `Bearer ${token}` } : {})
+      ...(body ? { "Content-Type": "application/json" } : {})
     };
 
     const response = await fetch(url, {
       method,
       headers,
+      credentials: 'include',
       body: body ? JSON.stringify(body) : undefined,
     });
 
@@ -42,12 +46,14 @@ async function handleRequest(
       return { ok: false, message };
     }
 
-    if (method === 'POST' && (url === '/api/login' || url === '/api/register')) {
-      const data: AuthResponse = await response.json();
-      localStorage.setItem('auth_token', data.token);
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      const data = await response.json();
+      if (method === 'POST' && (url === '/api/login' || url === '/api/register')) {
+        return { ok: true, data };
+      }
       return { ok: true, data };
     }
-
     return { ok: true };
   } catch (e: any) {
     return { ok: false, message: e.toString() };
@@ -55,20 +61,12 @@ async function handleRequest(
 }
 
 async function fetchUser(): Promise<SelectUser | null> {
-  const token = localStorage.getItem('auth_token');
-  if (!token) {
-    return null;
-  }
-
   const response = await fetch('/api/user', {
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
+    credentials: 'include'
   });
 
   if (!response.ok) {
     if (response.status === 401 || response.status === 403) {
-      localStorage.removeItem('auth_token');
       return null;
     }
 
@@ -92,20 +90,22 @@ export function useUser() {
     retry: false
   });
 
-  const loginMutation = useMutation<RequestResult, Error, InsertUser>({
+  const loginMutation = useMutation<RequestResult, Error, LoginCredentials>({
     mutationFn: (userData) => handleRequest('/api/login', 'POST', userData),
     onSuccess: (result) => {
       if (result.ok && result.data) {
         queryClient.setQueryData(['user'], result.data.user);
+        // Trigger a refetch of the user data to ensure we have the latest state
+        queryClient.invalidateQueries({ queryKey: ['user'] });
       }
     },
   });
 
   const logoutMutation = useMutation<RequestResult, Error>({
-    mutationFn: () => {
-      localStorage.removeItem('auth_token');
+    mutationFn: () => handleRequest('/api/logout', 'POST'),
+    onSuccess: () => {
       queryClient.setQueryData(['user'], null);
-      return Promise.resolve({ ok: true });
+      queryClient.invalidateQueries({ queryKey: ['user'] });
     }
   });
 
@@ -114,6 +114,8 @@ export function useUser() {
     onSuccess: (result) => {
       if (result.ok && result.data) {
         queryClient.setQueryData(['user'], result.data.user);
+        // Trigger a refetch of the user data to ensure we have the latest state
+        queryClient.invalidateQueries({ queryKey: ['user'] });
       }
     },
   });

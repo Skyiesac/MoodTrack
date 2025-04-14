@@ -26,40 +26,36 @@ async function handleRequest<T>(
   options: RequestInit = {}
 ): Promise<ApiResponse<T>> {
   try {
-    const token = localStorage.getItem('auth_token');
     const headers: HeadersInit = {
       ...options.headers,
-      ...(options.body ? { "Content-Type": "application/json" } : {}),
-      ...(token ? { "Authorization": `Bearer ${token}` } : {})
+      ...(options.body ? { "Content-Type": "application/json" } : {})
     };
 
     const response = await fetch(`${API_BASE_URL}${url}`, {
       ...options,
       headers,
-      credentials: 'include' // Enable cookies for CSRF
+      credentials: 'include' // Enable cookies for auth token
     });
 
-    if (!response.ok) {
-      // Try to get error message from response
-      let errorMessage: string;
-      try {
-        const errorData = await response.json();
-        errorMessage = errorData.message || response.statusText;
-      } catch {
-        errorMessage = await response.text() || response.statusText;
-      }
+    let responseData;
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      responseData = await response.json();
+    } else {
+      responseData = await response.text();
+    }
 
+    if (!response.ok) {
       return {
         ok: false,
         error: {
-          message: errorMessage,
+          message: responseData.message || responseData || response.statusText,
           status: response.status
         }
       } as const;
     }
 
-    const data = await response.json();
-    return { ok: true, data } as const;
+    return { ok: true, data: responseData } as const;
   } catch (error) {
     return {
       ok: false,
@@ -74,37 +70,25 @@ async function handleRequest<T>(
 export const api = {
   auth: {
     async login(credentials: Pick<InsertUser, 'username' | 'password'>): Promise<ApiResponse<AuthResponse>> {
-      const response = await handleRequest<AuthResponse>('/login', {
+      return handleRequest<AuthResponse>('/login', {
         method: 'POST',
         body: JSON.stringify(credentials)
       });
-
-      if (response.ok) {
-        localStorage.setItem('auth_token', response.data.token);
-      }
-
-      return response;
     },
 
     async register(userData: InsertUser): Promise<ApiResponse<AuthResponse>> {
-      const response = await handleRequest<AuthResponse>('/register', {
+      return handleRequest<AuthResponse>('/register', {
         method: 'POST',
         body: JSON.stringify(userData)
       });
-
-      if (response.ok) {
-        localStorage.setItem('auth_token', response.data.token);
-      }
-
-      return response;
     },
 
     async getCurrentUser(): Promise<ApiResponse<SelectUser>> {
       return handleRequest<SelectUser>('/user');
     },
 
-    async logout(): Promise<void> {
-      localStorage.removeItem('auth_token');
+    async logout(): Promise<ApiResponse<void>> {
+      return handleRequest('/logout', { method: 'POST' });
     }
   },
 
