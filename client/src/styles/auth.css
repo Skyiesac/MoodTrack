@@ -1,0 +1,64 @@
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.auth-background {
+  background: linear-gradient(-45deg, #E3D5CA, #D5BDAF, #B5838D);
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+}
+
+.auth-card {
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.auth-input {
+  transition: all 0.2s ease-in-out;
+}
+
+.auth-input:focus {
+  transform: scale(1.02);
+}
+
+.auth-button {
+  transition: all 0.2s ease-in-out;
+}
+
+.auth-button:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.form-transition {
+  transition: all 0.3s ease-in-out;
+}
+
+.form-transition-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.form-transition-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.form-transition-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.form-transition-exit-active {
+  opacity: 0;
+  transform: translateY(-20px);
+}
