@@ -98,8 +98,8 @@ $ npm start
 This project is licensed under the MIT License. 
 
 ## Credits
-Michael Garcia
-Alexander Barrios
-Tim Choe
-Simranjot Singh
+- Michael Garcia
+- Alexander Barrios
+- Tim Choe
+- Simranjot Singh
 
