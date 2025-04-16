@@ -10,6 +10,7 @@ const __dirname = dirname(__filename);
 
 export default defineConfig({
   plugins: [react(), runtimeErrorOverlay(), themePlugin()],
+  assetsInclude: ['**/*.jpg', '**/*.png'],
   resolve: {
     alias: {
       "@db": path.resolve(__dirname, "db"),

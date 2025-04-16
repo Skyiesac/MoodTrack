@@ -12,6 +12,19 @@ import { useUser } from "@/hooks/use-user";
 import { UserAccountNav } from "@/components/ui/user-account-nav";
 import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
 import "./styles/App.css";
+import backgroundImage from "./assets/background.jpg";
+
+// Add background image to body
+document.body.style.backgroundImage = `
+  linear-gradient(
+    rgba(254, 250, 246, 0.85),
+    rgba(254, 250, 246, 0.85)
+  ),
+  url(${backgroundImage})
+`;
+document.body.style.backgroundSize = 'cover';
+document.body.style.backgroundPosition = 'center';
+document.body.style.backgroundAttachment = 'fixed';
 
 function Router() {
   const { user, isLoading } = useUser();
