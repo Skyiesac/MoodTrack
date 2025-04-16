@@ -12,26 +12,14 @@ import { useUser } from "@/hooks/use-user";
 import { UserAccountNav } from "@/components/ui/user-account-nav";
 import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
 import "./styles/App.css";
-import backgroundImage from "./assets/background.jpg";
-
-// Add background image to body
-document.body.style.backgroundImage = `
-  linear-gradient(
-    rgba(254, 250, 246, 0.85),
-    rgba(254, 250, 246, 0.85)
-  ),
-  url(${backgroundImage})
-`;
-document.body.style.backgroundSize = 'cover';
-document.body.style.backgroundPosition = 'center';
-document.body.style.backgroundAttachment = 'fixed';
+import styles from "./styles/App.module.css";
 
 function Router() {
   const { user, isLoading } = useUser();
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#fefaf6]">
+      <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-[#6b8aaf]" />
       </div>
     );
@@ -42,8 +30,9 @@ function Router() {
   }
 
   return (
-    <div className="min-h-screen bg-[#fefaf6]">
-      <header className="border-b border-[#e4e2de] bg-[#fefaf6] p-6 shadow-sm">
+    <div className="min-h-screen">
+      <div className={styles.background}></div>
+      <header className="border-b border-[#e4e2de] bg-transparent p-6 shadow-sm backdrop-blur-sm">
         <div className="container mx-auto flex items-center justify-between">
           <Link href="/">
             <div className="cursor-pointer">
@@ -69,7 +58,7 @@ function Router() {
           <Route component={NotFound} />
         </Switch>
       </main>
-      <footer className="border-t border-[#e4e2de] py-8 text-[#6d6d6d] text-center">
+      <footer className="border-t border-[#e4e2de] py-8 text-[#6d6d6d] text-center bg-transparent backdrop-blur-sm">
         <div className="container mx-auto">
           <p className="text-sm">
             Mood Tracker &copy; {new Date().getFullYear()}
