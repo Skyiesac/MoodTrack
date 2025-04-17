@@ -30,9 +30,8 @@ function Router() {
   }
 
   return (
-    <div className="min-h-screen">
-      <div className={styles.background}></div>
-      <header className="border-b border-[#e4e2de] bg-transparent p-6 shadow-sm backdrop-blur-sm">
+    <div className="min-h-screen bg-[#fefaf6]">
+      <header className="border-b border-[#e4e2de] bg-[#fefaf6] p-6 shadow-sm">
         <div className="container mx-auto flex items-center justify-between">
           <Link href="/">
             <div className="cursor-pointer">
@@ -58,7 +57,7 @@ function Router() {
           <Route component={NotFound} />
         </Switch>
       </main>
-      <footer className="border-t border-[#e4e2de] py-8 text-[#6d6d6d] text-center bg-transparent backdrop-blur-sm">
+      <footer className="border-t border-[#e4e2de] py-8 text-[#6d6d6d] text-center">
         <div className="container mx-auto">
           <p className="text-sm">
             Mood Tracker &copy; {new Date().getFullYear()}

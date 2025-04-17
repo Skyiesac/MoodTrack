@@ -11,9 +11,16 @@
 }
 
 .auth-background {
-  background: linear-gradient(-45deg, #E3D5CA, #D5BDAF, #B5838D);
-  background-size: 400% 400%;
-  animation: gradient 15s ease infinite;
+  background-image: 
+    linear-gradient(
+      rgba(227, 213, 202, 0.85),
+      rgba(213, 189, 175, 0.85),
+      rgba(181, 131, 141, 0.85)
+    ),
+    url('../assets/background.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
 }
 
 .auth-card {
