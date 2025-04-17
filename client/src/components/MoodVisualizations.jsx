@@ -57,7 +57,25 @@ const PRESET_RANGES = {
   'thisYear': { label: 'This year', fn: () => ({ from: startOfYear(new Date()), to: endOfYear(new Date()) }) },
 };
 
-export default function MoodVisualizations({ entries }) {
+// Generate dummy data for the last 30 days
+const generateDummyData = () => {
+  const data = [];
+  const moods = Object.keys(MOOD_VALUES);
+  const today = new Date();
+
+  for (let i = 30; i >= 0; i--) {
+    const date = subDays(today, i);
+    data.push({
+      date: date.toISOString().split('T')[0],
+      mood: moods[Math.floor(Math.random() * moods.length)]
+    });
+  }
+  return data;
+};
+
+const DUMMY_ENTRIES = generateDummyData();
+
+export default function MoodVisualizations() {
   const [dateRange, setDateRange] = useState({
     from: addDays(new Date(), -30),
     to: new Date(),
@@ -75,14 +93,14 @@ export default function MoodVisualizations({ entries }) {
 
   // Filter entries based on date range and selected moods
   const filteredEntries = useMemo(() => {
-    return entries.filter(entry => {
+    return DUMMY_ENTRIES.filter(entry => {
       const entryDate = new Date(entry.date);
       return isWithinInterval(entryDate, {
         start: startOfDay(dateRange.from),
         end: endOfDay(dateRange.to)
       }) && selectedMoods.includes(entry.mood);
     });
-  }, [entries, dateRange, selectedMoods]);
+  }, [dateRange, selectedMoods]);
 
   // Transform entries for visualization
   const chartData = useMemo(() => {

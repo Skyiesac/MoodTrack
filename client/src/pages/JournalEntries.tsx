@@ -1,4 +1,16 @@
 import { useState } from "react";
+import type { Dispatch, SetStateAction } from "react";
+
+interface Entry {
+  date: string;
+  mood: string;
+  content: string;
+  tags: string[];
+}
+
+interface MoodsByDate {
+  [key: string]: string;
+}
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -9,7 +21,7 @@ import { QuoteCard } from "@/components/ui/quote-card";
 import { PlusCircle } from "lucide-react";
 
 export default function JournalEntries() {
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   // Mock data - in real app would come from API
   const entries = [
@@ -45,10 +57,10 @@ export default function JournalEntries() {
     }
   ];
 
-  const moodsByDate = entries.reduce((acc, entry) => {
+  const moodsByDate: MoodsByDate = entries.reduce((acc, entry) => {
     acc[entry.date] = entry.mood;
     return acc;
-  }, {});
+  }, {} as MoodsByDate);
 
   const filteredEntries = selectedDate
     ? entries.filter(entry => entry.date === selectedDate.toISOString().split('T')[0])
@@ -102,7 +114,7 @@ export default function JournalEntries() {
         </TabsContent>
 
         <TabsContent value="visualizations" className="mt-6">
-          <MoodVisualizations entries={entries} />
+          <MoodVisualizations />
         </TabsContent>
       </Tabs>
     </div>
