@@ -19,7 +19,17 @@ export default defineConfig({
       include: [/@babel\/preset-typescript\/package\.json/]
     },
     outDir: path.resolve(__dirname, "dist/public"),
-    emptyOutDir: true
+    emptyOutDir: true,
+    rollupOptions: {
+      external: [
+        'lightningcss',
+        '@babel/preset-typescript/package.json',
+        'pg-native'
+      ],
+      output: {
+        format: 'es'
+      }
+    }
   },
   css: {
     modules: {

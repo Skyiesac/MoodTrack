@@ -80,35 +80,47 @@ curl http://localhost:3002/health
 
 ## Deployment on Render
 
-### Build Settings
+### PostgreSQL Setup
 
-1. Build Command:
-```bash
-npm install && npm run build
-```
+1. Create a new PostgreSQL instance on Render
+2. Select the same region as you'll use for your web service
+3. Copy the internal Database URL for use in the web service setup
 
-2. Start Command:
-```bash
-npm run start
-```
+### Web Service Configuration
 
-### Environment Variables
+1. Create a new Web Service with these settings:
+   - Name: `soulsync-api` (or your preferred name)
+   - Region: Same as PostgreSQL instance
+   - Branch: main
+   - Runtime: Node
+   - Build Command: `npm install && npm run build`
+   - Start Command: `npm run start`
+   - Instance Type: Free
 
-Required environment variables for production:
-```env
-NODE_ENV=production
-DATABASE_URL=your_postgresql_url
-JWT_SECRET=your_jwt_secret
-PORT=3002
-CORS_ALLOWED_ORIGINS=https://your-frontend-domain.com
-```
+2. Environment Variables:
+   ```
+   NODE_ENV=production
+   DATABASE_URL=[Your Internal PostgreSQL URL from Render]
+   JWT_SECRET=[Your Secret Key]
+   PORT=10000
+   CORS_ALLOWED_ORIGINS=https://your-frontend-domain.onrender.com
+   ```
 
-### Important Notes
+### Important Configuration Notes
 
-- Ensure `NODE_ENV` is set to `production`
-- Configure CORS origins for your frontend domain
-- Use Render's internal PostgreSQL service or external database
-- Set appropriate memory and CPU limits based on your needs
+1. Port Configuration:
+   - The application uses `process.env.PORT` in production
+   - Host is set to `0.0.0.0` in production for Render compatibility
+
+2. Database Connection:
+   - Uses Render's internal PostgreSQL URL
+   - SSL is enabled for secure database connections
+   - Connection pooling is configured for production use
+
+3. Security Settings:
+   - CORS is configured for your frontend domain
+   - Helmet and CSRF protection enabled in production
+   - Secure cookie settings for production environment
 
 ## License
 

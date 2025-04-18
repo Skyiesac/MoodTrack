@@ -130,7 +130,8 @@ const errorHandler = (err: any, _req: Request, res: Response, _next: NextFunctio
     }
 
     const PORT = parseInt(process.env.PORT || '3002', 10);
-    server.listen(PORT, '127.0.0.1', () => {
+    const HOST = process.env.NODE_ENV === 'production' ? '0.0.0.0' : '127.0.0.1';
+    server.listen(PORT, HOST, () => {
       log(`Server running on port ${PORT} in ${app.get("env")} mode`);
     });
   } catch (error) {
