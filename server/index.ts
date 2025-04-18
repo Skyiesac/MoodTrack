@@ -6,16 +6,16 @@ import sequelize from "./models/db";
 import dotenv from "dotenv";
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import helmet from 'helmet';
+import csrf from 'csurf';
 
 // Load environment variables from .env file
 dotenv.config();
 
 const app = express();
 
-// Security middleware - disabled in development
+// Security middleware
 if (process.env.NODE_ENV === 'production') {
-  const helmet = require('helmet');
-  const csrf = require('csurf');
   app.use(helmet());
   app.use(csrf({ cookie: true }));
 } else {

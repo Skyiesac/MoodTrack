@@ -78,6 +78,38 @@ For database connection issues:
 curl http://localhost:3002/health
 ```
 
+## Deployment on Render
+
+### Build Settings
+
+1. Build Command:
+```bash
+npm install && npm run build
+```
+
+2. Start Command:
+```bash
+npm run start
+```
+
+### Environment Variables
+
+Required environment variables for production:
+```env
+NODE_ENV=production
+DATABASE_URL=your_postgresql_url
+JWT_SECRET=your_jwt_secret
+PORT=3002
+CORS_ALLOWED_ORIGINS=https://your-frontend-domain.com
+```
+
+### Important Notes
+
+- Ensure `NODE_ENV` is set to `production`
+- Configure CORS origins for your frontend domain
+- Use Render's internal PostgreSQL service or external database
+- Set appropriate memory and CPU limits based on your needs
+
 ## License
 
 MIT
