@@ -4,6 +4,7 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
+    "predev": "tsx scripts/kill-ports.js",
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend:with-backend\"",
     "dev:backend": "tsx server/index.ts",
     "dev:frontend": "vite",

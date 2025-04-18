@@ -42,9 +42,12 @@ npm run dev
 ```
 
 This command will:
-1. Start the backend server (port 3002)
-2. Wait for the backend health check to pass
-3. Start the frontend development server (port 5184)
+1. Check and clear any processes using required ports (3002, 5184)
+2. Start the backend server (port 3002)
+3. Wait for the backend health check to pass
+4. Start the frontend development server (port 5184)
+
+The startup process includes automatic port management to prevent "Address already in use" errors.
 
 ### Health Checks
 
