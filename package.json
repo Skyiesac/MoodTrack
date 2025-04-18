@@ -4,9 +4,10 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
-    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend:with-backend\"",
     "dev:backend": "tsx server/index.ts",
     "dev:frontend": "vite",
+    "dev:frontend:with-backend": "tsx scripts/wait-for-backend.js && npm run dev:frontend",
     "build": "vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
     "start": "NODE_ENV=production node dist/index.js",
     "check": "tsc",
@@ -14,6 +15,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
+    "node-fetch": "^3.3.2",
     "@jridgewell/trace-mapping": "^0.3.25",
     "@radix-ui/react-accordion": "^1.2.1",
     "@radix-ui/react-alert-dialog": "^1.1.2",

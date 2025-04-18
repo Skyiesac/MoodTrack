@@ -1,6 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import healthRouter from "./health";
 import sequelize from "./models/db";
 import dotenv from "dotenv";
 import cors from 'cors';
@@ -35,6 +36,9 @@ if (process.env.NODE_ENV === 'production') {
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// Health check endpoint
+app.use('/health', healthRouter);
 
 // Request logging middleware
 app.use((req, res, next) => {

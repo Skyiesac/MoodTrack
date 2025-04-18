@@ -1,105 +1,80 @@
-# SoulSync
+# SoulSync - Mood Tracking Application
 
-Awareness around mental well-being is rapidly increasing in today's society. SoulSync is an application designed to empower users to track and improve their mental status by providing journaling, mood tracking, and personal insights. SoulSync strives to promote self-awareness, allowing users to cultivate a balanced and healthy state of mind.
+A full-stack application for tracking daily moods and journal entries.
 
-## Features
+## Development Setup
 
-* Journaling: Record your thoughts and feelings in a secure, user-friendly journal.
-* Mood Tracking: Log daily mood and identify recurring patterns over time.
-* Personal Insights: Receive suggestions to improve psychological health.
+### Prerequisites
 
-## Features
-### Front-End
-- Interactive **Calendar** to browse and manage journal entries.
-- Visualizations of mood trends with charts and graphs.
-- User-friendly pages for **Journal Entries**, **New Journal Entry**, and **Settings**.
-- Authentication pages for **Sign In** and **Sign Up**.
-- Responsive design using **Tailwind CSS** for a seamless user experience across devices.
+- Node.js (v18 or higher)
+- PostgreSQL
+- npm
 
-### Back-End
-- **RESTful API** to handle journal entries, user authentication, and mood data.
-- **Authentication** using secure methods to manage user sessions.
-- Database integration to store user data, journal entries, and mood trends.
+### Environment Variables
 
-### Database
-- Models for **Users**, **Journal Entries**, **Tags**, and **Mood Data**.
-- Schemas defined in `db/schema.ts` to ensure structured and scalable data storage.
+Create a `.env` file in the root directory with the following variables:
 
-## Tech Stack
-### Front-End
-- **React**: For building dynamic and interactive UI components.
-- **TypeScript**: Ensures type safety and maintainable front-end code.
-- **Tailwind CSS**: Utility-first CSS framework for styling.
-- **Vite**: High-performance development server and build tool.
-
-### Back-End
-- **Node.js**: JavaScript runtime for server-side logic.
-- **TypeScript**: For type-safe and maintainable back-end code.
-- **RESTful API**: To handle data communication with the front-end.
-
-### Database
-- **Database Models**: Defined in `db/schema.ts` and `server/models`.
-- Storage for user authentication, journal entries, and mood tracking.
-
-## File Structure
-### Root Level
-- **`.env`**: Environment variables for sensitive information.
-- **`package.json`**: Lists dependencies and scripts.
-- **`postcss.config.js`**: Configuration for PostCSS.
-- **`tailwind.config.ts`**: Configuration for Tailwind CSS.
-- **`vite.config.ts`**: Vite build configuration.
-
-### Front-End (`client/`)
-- **`src/components`**: Contains reusable UI components.
-- **`src/pages`**: Defines pages like Journal Entries, New Entry, and Authentication.
-- **`src/hooks`**: Custom React hooks for specific logic.
-- **`src/styles`**: CSS files for styling.
-- **`src/utils`**: Helper functions like API calls and date formatting.
-
-### Back-End (`server/`)
-- **`auth.ts`**: Handles user authentication logic.
-- **`routes.ts`**: Defines API endpoints for journal entries and user management.
-- **`models/`**: Contains database models (e.g., User, Mood Entry).
-
-### Database (`db/`)
-- **`schema.ts`**: Defines database schemas.
-- **`index.ts`**: Initializes the database connection.
-
----
-
-## Installation
-
-Before you get started, ensure you have Node.js and PostgresSQL installed.
-
-### From your command line:
-
-```bash
-# Clone this repository
-$ git clone git@github.com:Mykull06/projectSoulSync.git
-
-# cd into repository
-$ cd projectSoulSync
-
-# install dependencies
-$ npm install
-
-# run the app
-$ npm start
+```env
+DATABASE_URL=your_postgresql_connection_string
+JWT_SECRET=your_jwt_secret
+CORS_ALLOWED_ORIGINS=http://localhost:5184
+PORT=3002
 ```
 
+### Installation
 
+1. Install dependencies:
+```bash
+npm install
+```
 
-## Future Features
-- Mood analysis using AI.
-- Notifications and reminders for journaling.
-- Sharing mood trends with trusted individuals.
+2. Set up the database:
+```bash
+npm run db:push
+```
+
+### Running the Application
+
+The application uses a coordinated startup process to ensure both frontend and backend are running properly:
+
+```bash
+npm run dev
+```
+
+This command will:
+1. Start the backend server (port 3002)
+2. Wait for the backend health check to pass
+3. Start the frontend development server (port 5184)
+
+### Health Checks
+
+The backend provides a health endpoint at `/health` that monitors:
+- Server status
+- Database connection
+- System uptime
+
+### Development Notes
+
+- Backend runs on `http://localhost:3002`
+- Frontend runs on `http://localhost:5184`
+- Health check ensures services start in the correct order
+- API endpoints are proxied through the frontend development server
+
+### Troubleshooting
+
+If you encounter startup issues:
+
+1. Check if both ports (3002 and 5184) are available
+2. Verify database connection string in `.env`
+3. Ensure all dependencies are installed
+4. Check the logs for specific error messages
+
+For database connection issues:
+```bash
+# Verify database connection
+curl http://localhost:3002/health
+```
 
 ## License
-This project is licensed under the MIT License. 
 
-## Credits
-- Michael Garcia
-- Alexander Barrios
-- Tim Choe
-- Simranjot Singh
-
+MIT
