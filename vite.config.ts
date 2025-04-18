@@ -11,6 +11,16 @@ const __dirname = dirname(__filename);
 export default defineConfig({
   plugins: [react(), runtimeErrorOverlay(), themePlugin()],
   assetsInclude: ['**/*.jpg', '**/*.png'],
+  optimizeDeps: {
+    exclude: ['lightningcss']
+  },
+  build: {
+    commonjsOptions: {
+      include: [/@babel\/preset-typescript\/package\.json/]
+    },
+    outDir: path.resolve(__dirname, "dist/public"),
+    emptyOutDir: true
+  },
   css: {
     modules: {
       localsConvention: 'camelCase',
@@ -24,10 +34,6 @@ export default defineConfig({
     },
   },
   root: path.resolve(__dirname, "client"),
-  build: {
-    outDir: path.resolve(__dirname, "dist/public"),
-    emptyOutDir: true,
-  },
   server: {
     port: 5184,
     proxy: {
