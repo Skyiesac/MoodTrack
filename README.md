@@ -15,10 +15,23 @@ A full-stack application for tracking daily moods and journal entries.
 Create a `.env` file in the root directory with the following variables:
 
 ```env
-DATABASE_URL=your_postgresql_connection_string
+# Database Configuration (Example format)
+DATABASE_URL=postgresql://username:password@host/database_name
+
+# Server Configuration
+PORT=3002
+NODE_ENV=development
+
+# Security
 JWT_SECRET=your_jwt_secret
 CORS_ALLOWED_ORIGINS=http://localhost:5184
-PORT=3002
+```
+
+**Important**: Never commit your `.env` file or sensitive credentials to version control. The `.env` file is already included in `.gitignore`.
+
+For Render deployment, you'll use the internal Database URL provided by Render's PostgreSQL service, which follows this format:
+```
+postgresql://user:password@host/database_name
 ```
 
 ### Installation
