@@ -106,9 +106,15 @@ curl http://localhost:3002/health
    - Region: Same as PostgreSQL instance
    - Branch: main
    - Runtime: Node
-   - Build Command: `npm install && npm run build`
-   - Start Command: `npm run start`
+   - Build Command: `npm install; npm run build`
+   - Start Command: `cd dist && node index.js`
    - Instance Type: Free
+
+Note: The build process will:
+1. Install dependencies
+2. Build frontend assets to dist/public
+3. Bundle backend code to dist/index.js
+4. Copy production dependencies to dist folder
 
 2. Environment Variables:
    ```

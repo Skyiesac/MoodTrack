@@ -27,9 +27,13 @@ export default defineConfig({
         'pg-native'
       ],
       output: {
-        format: 'es'
+        format: 'es',
+        preserveModules: true,
+        preserveModulesRoot: 'src'
       }
-    }
+    },
+    target: 'esnext',
+    sourcemap: false
   },
   css: {
     modules: {
