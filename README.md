@@ -141,6 +141,36 @@ Note: The build process will:
    - Helmet and CSRF protection enabled in production
    - Secure cookie settings for production environment
 
+### Troubleshooting Deployment
+
+If you encounter issues during deployment:
+
+1. Check Build Logs:
+   - View deploy logs in Render Dashboard
+   - Search for "error" in log explorer
+   - Verify build command completes successfully
+
+2. Environment Variables:
+   - Ensure all required variables are set:
+     ```
+     NODE_ENV=production
+     DATABASE_URL=[Your PostgreSQL URL]
+     JWT_SECRET=[Your Secret]
+     PORT=10000
+     CORS_ALLOWED_ORIGINS=[Frontend URL]
+     ```
+   - Double-check PostgreSQL URL format
+
+3. Build Process:
+   - Frontend builds to `dist/public`
+   - Backend bundles to `dist/index.js`
+   - Production dependencies installed in dist folder
+
+4. Common Issues:
+   - If build fails: Check Node.js version (set to 18.x)
+   - If runtime fails: Verify start command and working directory
+   - Database errors: Check PostgreSQL connection and SSL settings
+
 ## License
 
 MIT

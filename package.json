@@ -9,11 +9,11 @@
     "dev:backend": "tsx server/index.ts",
     "dev:frontend": "vite",
     "dev:frontend:with-backend": "tsx scripts/wait-for-backend.js && npm run dev:frontend",
-    "build:frontend": "vite build --outDir dist/public",
-    "build:backend": "esbuild server/index.ts --platform=node --bundle --format=cjs --outdir=dist --external:pg-native --external:lightningcss --external:@babel/preset-typescript/package.json",
+    "build:frontend": "NODE_ENV=production vite build",
+    "build:backend": "esbuild server/index.ts --platform=node --bundle --format=cjs --outdir=dist --external:pg-native",
     "build": "npm run build:frontend && npm run build:backend",
-    "postbuild": "cp package.json dist/ && cd dist && npm install --production",
-    "start": "cd dist && NODE_ENV=production node index.js",
+    "postbuild": "cp package.json dist/ && cd dist && npm install --omit=dev",
+    "start": "NODE_ENV=production node index.js",
     "check": "tsc",
     "db:push": "drizzle-kit push"
   },
@@ -89,8 +89,7 @@
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^1.1.0",
-    "wouter": "^2.11.0",
-    "use-sync-external-store": "^1.2.0",
+    "react-router-dom": "^6.22.0",
     "ws": "^8.18.0",
     "zod": "^3.23.8"
   },
@@ -114,7 +113,7 @@
     "tsx": "^4.19.1",
     "typescript": "5.6.3",
     "vite": "^5.4.9",
-    "@types/use-sync-external-store": "^0.0.3"
+    "@types/react-router-dom": "^5.3.3"
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.8"

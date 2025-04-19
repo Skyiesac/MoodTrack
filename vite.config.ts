@@ -15,25 +15,18 @@ export default defineConfig({
     exclude: ['lightningcss']
   },
   build: {
-    commonjsOptions: {
-      include: [/@babel\/preset-typescript\/package\.json/]
-    },
     outDir: path.resolve(__dirname, "dist/public"),
     emptyOutDir: true,
     rollupOptions: {
-      external: [
-        'lightningcss',
-        '@babel/preset-typescript/package.json',
-        'pg-native'
-      ],
+      external: ['pg-native'],
       output: {
-        format: 'es',
-        preserveModules: true,
-        preserveModulesRoot: 'src'
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom']
+        }
       }
     },
-    target: 'esnext',
-    sourcemap: false
+    target: 'es2015',
+    sourcemap: process.env.NODE_ENV !== 'production'
   },
   css: {
     modules: {

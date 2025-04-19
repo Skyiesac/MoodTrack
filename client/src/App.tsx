@@ -1,4 +1,4 @@
-import { Switch, Route, Link } from "wouter";
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -50,12 +50,12 @@ function Router() {
         <BreadcrumbNav />
       </div>
       <main className="container mx-auto p-6">
-        <Switch>
-          <Route path="/" component={JournalEntries} />
-          <Route path="/new" component={NewJournal} />
-          <Route path="/settings" component={SettingsPage} />
-          <Route component={NotFound} />
-        </Switch>
+        <Routes>
+          <Route path="/" element={<JournalEntries />} />
+          <Route path="/new" element={<NewJournal />} />
+          <Route path="/settings" element={<SettingsPage />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
       </main>
       <footer className="border-t border-[#e4e2de] py-8 text-[#6d6d6d] text-center">
         <div className="container mx-auto">
@@ -71,8 +71,10 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Router />
-      <Toaster />
+      <BrowserRouter>
+        <Router />
+        <Toaster />
+      </BrowserRouter>
     </QueryClientProvider>
   );
 }
