@@ -107,7 +107,14 @@ curl http://localhost:3002/health
    - Branch: main
    - Runtime: Node
    - Build Command: `npm install; npm run build`
-   - Start Command: `cd dist && node index.js`
+   - Start Command: `cd dist && node --experimental-modules index.js`
+   - Node Version: 18.x (required)
+
+Note: The build process uses ESM modules and requires Node.js experimental modules flag:
+1. Frontend builds to `dist/public` using Vite
+2. Backend bundles to `dist/index.js` using esbuild with ESM format
+3. Production dependencies are installed in the dist folder
+4. Node.js runs with --experimental-modules flag for ESM support
    - Instance Type: Free
 
 Note: The build process will:
