@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -7,51 +7,67 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useUser } from "@/hooks/use-user";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Settings, LogOut } from "lucide-react";
-import { useLocation } from "wouter";
+import { useUser } from "@/hooks/use-user";
+import { api } from "@/utils/api";
+import { useToast } from "@/hooks/use-toast";
 
 export function UserAccountNav() {
-  const { user, logout } = useUser();
-  const [, setLocation] = useLocation();
+  const navigate = useNavigate();
+  const { user } = useUser();
+  const { toast } = useToast();
 
   if (!user) return null;
 
-  const initials = user.username
-    .split('@')[0] // Get part before @ if it's an email
-    .split(/\s+/) // Split by whitespace if it's a full name
-    .map(word => word[0]?.toUpperCase()) // Get first letter of each word
-    .slice(0, 2) // Take first two initials
-    .join('');
+  const handleLogout = async () => {
+    try {
+      const result = await api.auth.logout();
+      if (!result.ok) {
+        throw new Error(result.error.message);
+      }
+      navigate('/signin');
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to logout"
+      });
+    }
+  };
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
-            <AvatarFallback>{initials}</AvatarFallback>
+            <AvatarFallback>
+              {user.firstName[0]}
+              {user.lastName[0]}
+            </AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <div className="flex items-center justify-start gap-2 p-2">
           <div className="flex flex-col space-y-1 leading-none">
-            <p className="font-medium">{user.username}</p>
+            <p className="font-medium">
+              {user.firstName} {user.lastName}
+            </p>
+            <p className="w-[200px] truncate text-sm text-muted-foreground">
+              {user.email}
+            </p>
           </div>
         </div>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => setLocation("/settings")}>
+        <DropdownMenuItem
+          className="cursor-pointer"
+          onClick={() => navigate('/settings')}
+        >
           <Settings className="mr-2 h-4 w-4" />
           <span>Settings</span>
         </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          className="text-red-600 focus:text-red-600"
-          onSelect={async () => {
-            await logout();
-            setLocation("/");
-          }}
-        >
+        <DropdownMenuItem className="cursor-pointer" onClick={handleLogout}>
           <LogOut className="mr-2 h-4 w-4" />
           <span>Log out</span>
         </DropdownMenuItem>

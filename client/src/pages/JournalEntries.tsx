@@ -11,7 +11,7 @@ interface Entry {
 interface MoodsByDate {
   [key: string]: string;
 }
-import { Link } from "wouter";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import Calendar from "../components/Calendar";
@@ -70,7 +70,7 @@ export default function JournalEntries() {
     <div className="max-w-4xl mx-auto">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-semibold text-[#3c3c3c]">Mood Journal</h2>
-        <Link href="/new">
+            <Link to="/new">
           <Button className="bg-[#6b8aaf] text-white hover:bg-[#5a769c]">
             <PlusCircle className="mr-2 h-4 w-4" />
             New Entry

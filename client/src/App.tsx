@@ -33,7 +33,7 @@ function Router() {
     <div className="min-h-screen bg-[#fefaf6]">
       <header className="border-b border-[#e4e2de] bg-[#fefaf6] p-6 shadow-sm">
         <div className="container mx-auto flex items-center justify-between">
-          <Link href="/">
+          <Link to="/">
             <div className="cursor-pointer">
               <h1 className="text-[#2d3748] text-3xl font-bold tracking-tight hover:text-[#6b8aaf] transition-colors">
                 Mood Tracker

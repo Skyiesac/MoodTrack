@@ -1,48 +1,35 @@
-import { useLocation } from "wouter";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+import { useLocation } from "react-router-dom";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from "./breadcrumb";
+import { ChevronRight } from "lucide-react";
+
+const pathToTitle: Record<string, string> = {
+  '/': 'Home',
+  '/new': 'New Entry',
+  '/settings': 'Settings'
+};
 
 export function BreadcrumbNav() {
-  const [location] = useLocation();
-  
-  // Get path segments and create breadcrumb items
-  const segments = location.split('/').filter(Boolean);
-  
-  // If we're at root, don't show breadcrumbs
-  if (segments.length === 0) {
-    return null;
-  }
-  
+  const location = useLocation();
+  const pathSegments = location.pathname.split('/').filter(Boolean);
+  const paths = pathSegments.map((_, index) => 
+    '/' + pathSegments.slice(0, index + 1).join('/')
+  );
+
+  if (location.pathname === '/') return null;
+
   return (
     <Breadcrumb className="py-4">
-      <BreadcrumbList>
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/">Mood Journal</BreadcrumbLink>
+      <BreadcrumbItem>
+        <BreadcrumbLink href="/">Home</BreadcrumbLink>
+      </BreadcrumbItem>
+      {paths.map((path) => (
+        <BreadcrumbItem key={path}>
+          <ChevronRight className="h-4 w-4" />
+          <BreadcrumbLink href={path}>
+            {pathToTitle[path] || path.split('/').pop()}
+          </BreadcrumbLink>
         </BreadcrumbItem>
-        <BreadcrumbSeparator />
-        {segments.map((segment, index) => {
-          const isLast = index === segments.length - 1;
-          const path = `/${segments.slice(0, index + 1).join('/')}`;
-          const label = segment.charAt(0).toUpperCase() + segment.slice(1);
-          
-          return (
-            <BreadcrumbItem key={path}>
-              {isLast ? (
-                <BreadcrumbPage>{label}</BreadcrumbPage>
-              ) : (
-                <BreadcrumbLink href={path}>{label}</BreadcrumbLink>
-              )}
-              {!isLast && <BreadcrumbSeparator />}
-            </BreadcrumbItem>
-          );
-        })}
-      </BreadcrumbList>
+      ))}
     </Breadcrumb>
   );
 }

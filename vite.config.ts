@@ -20,10 +20,12 @@ export default defineConfig({
     rollupOptions: {
       external: ['pg-native'],
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom']
-        }
+        manualChunks: undefined
       }
+    },
+    commonjsOptions: {
+      include: [/node_modules/],
+      extensions: ['.js', '.cjs', '.jsx', '.tsx']
     },
     target: 'es2015',
     sourcemap: process.env.NODE_ENV !== 'production'
