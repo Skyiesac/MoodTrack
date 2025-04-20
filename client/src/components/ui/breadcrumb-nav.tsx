@@ -1,5 +1,5 @@
-import { useLocation } from "react-router-dom";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from "./breadcrumb";
+import { useLocation, Link } from "react-router-dom";
+import { Breadcrumb, BreadcrumbItem } from "./breadcrumb";
 import { ChevronRight } from "lucide-react";
 
 const pathToTitle: Record<string, string> = {
@@ -20,14 +20,16 @@ export function BreadcrumbNav() {
   return (
     <Breadcrumb className="py-4">
       <BreadcrumbItem>
-        <BreadcrumbLink href="/">Home</BreadcrumbLink>
+        <Link to="/" className="text-sm font-medium text-muted-foreground hover:text-foreground">
+          Home
+        </Link>
       </BreadcrumbItem>
       {paths.map((path) => (
         <BreadcrumbItem key={path}>
           <ChevronRight className="h-4 w-4" />
-          <BreadcrumbLink href={path}>
+          <Link to={path} className="text-sm font-medium text-muted-foreground hover:text-foreground">
             {pathToTitle[path] || path.split('/').pop()}
-          </BreadcrumbLink>
+          </Link>
         </BreadcrumbItem>
       ))}
     </Breadcrumb>
