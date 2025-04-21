@@ -1,15 +1,13 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import themePlugin from "@replit/vite-plugin-shadcn-theme-json";
 import path, { dirname } from "path";
-import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 export default defineConfig({
-  plugins: [react(), runtimeErrorOverlay(), themePlugin()],
+  plugins: [react()],
   assetsInclude: ['**/*.jpg', '**/*.png'],
   optimizeDeps: {
     exclude: ['lightningcss']
@@ -24,11 +22,11 @@ export default defineConfig({
       }
     },
     commonjsOptions: {
-      include: [/node_modules/],
+      include: [/node_modules/, /@babel\/preset-typescript\/package\.json/],
       extensions: ['.js', '.cjs', '.jsx', '.tsx']
     },
     target: 'es2015',
-    sourcemap: process.env.NODE_ENV !== 'production'
+    sourcemap: false
   },
   css: {
     modules: {
