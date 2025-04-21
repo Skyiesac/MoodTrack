@@ -1,7 +1,6 @@
-import express, { type Request, Response, NextFunction } from "express";
+import express from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
-import healthRouter from "./health";
 import sequelize from "./models/db";
 import dotenv from "dotenv";
 import cors from 'cors';
@@ -89,7 +88,7 @@ app.use((req, res, next) => {
 });
 
 // Error handling middleware
-const errorHandler = (err: any, _req: Request, res: Response, _next: NextFunction) => {
+const errorHandler = (err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error('Error:', err);
 
   // Handle JWT errors
@@ -139,3 +138,5 @@ const errorHandler = (err: any, _req: Request, res: Response, _next: NextFunctio
     process.exit(1);
   }
 })();
+
+export default app;
