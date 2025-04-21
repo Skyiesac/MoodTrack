@@ -13,7 +13,7 @@
     "build:backend": "esbuild server/index.ts --platform=node --bundle --format=esm --outdir=dist --external:pg-native --external:fsevents --external:lightningcss --external:@babel/preset-typescript/package.json --external:esbuild",
     "build": "npm run build:frontend && npm run build:backend",
     "postbuild": "cp package.json dist/ && cd dist && npm install --omit=dev",
-    "start": "NODE_ENV=production node --experimental-modules index.js",
+    "start": "cd dist && NODE_ENV=production node --experimental-modules index.js",
     "check": "tsc",
     "db:push": "drizzle-kit push"
   },
