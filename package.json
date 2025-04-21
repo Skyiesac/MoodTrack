@@ -10,7 +10,7 @@
     "dev:frontend": "vite",
     "dev:frontend:with-backend": "tsx scripts/wait-for-backend.js && npm run dev:frontend",
     "build:frontend": "NODE_ENV=production vite build",
-    "build:backend": "esbuild server/index.ts --platform=node --bundle --format=cjs --outdir=dist --external:express --external:pg --external:sequelize --external:pg-hstore --external:cors --external:helmet --external:csurf --external:cookie-parser --external:dotenv --external:jsonwebtoken",
+    "build:backend": "esbuild server/index.ts --platform=node --bundle --format=cjs --outdir=dist --external:express --external:pg --external:sequelize --external:pg-hstore --external:cors --external:helmet --external:csurf --external:cookie-parser --external:dotenv --external:jsonwebtoken --external:fsevents --external:esbuild --external:lightningcss --external:@babel/preset-typescript/package.json --external:vite --external:@vitejs/plugin-react --external:path --external:url",
     "build": "npm run build:frontend && npm run build:backend",
     "postbuild": "cp package.json dist/ && cd dist && npm install --omit=dev",
     "start": "cd dist && NODE_ENV=production node index.js",
