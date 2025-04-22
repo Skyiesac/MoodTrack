@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: projectSoulSync
+    env: node
+    region: oregon
+    branch: main
+    repo:
+      owner: Mykull06
+      repo: projectSoulSync
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
