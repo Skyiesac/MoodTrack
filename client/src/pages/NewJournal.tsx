@@ -69,18 +69,44 @@ export default function NewJournal() {
   }, [navigate, toast]);
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <div className="mb-6">
-        <Button
-          variant="ghost"
-          onClick={() => navigate('/')}
-          className="text-[#3c3c3c]"
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Journal
-        </Button>
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center space-x-4">
+          <Button
+            variant="ghost"
+            onClick={() => navigate('/')}
+            className="text-gray-600 hover:text-gray-900"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Journal
+          </Button>
+          <div className="h-6 w-px bg-gray-200" />
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Create New Entry</h1>
+            <p className="text-sm text-gray-500">
+              {new Date().toLocaleDateString('en-US', { 
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })}
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center space-x-2">
+          <div className="text-sm text-gray-500">
+            {user?.firstName} {user?.lastName}
+          </div>
+          <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+            <span className="text-sm font-medium text-blue-700">
+              {user?.firstName?.[0]}{user?.lastName?.[0]}
+            </span>
+          </div>
+        </div>
       </div>
-      <NewEntry onSubmit={handleSubmit} />
+      <div className="max-w-3xl mx-auto">
+        <NewEntry onSubmit={handleSubmit} />
+      </div>
     </div>
   );
 }

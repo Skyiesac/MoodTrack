@@ -30,24 +30,36 @@ export default function Calendar({ onSelectDate, selectedMoods = {} }) {
     }
   };
 
+  const moodColors = {
+    great: 'bg-green-50 text-green-700',
+    good: 'bg-blue-50 text-blue-700',
+    neutral: 'bg-gray-50 text-gray-700',
+    bad: 'bg-orange-50 text-orange-700',
+    terrible: 'bg-red-50 text-red-700'
+  };
+
   return (
-    <Card className="p-4">
+    <Card className="p-6 bg-white shadow-lg h-full">
+      <div className="mb-4">
+        <h3 className="text-lg font-semibold text-gray-900">Mood Calendar</h3>
+        <p className="text-sm text-gray-500">Track your daily emotional journey</p>
+      </div>
       <CalendarUI
         mode="single"
         selected={date}
         onSelect={handleDateSelect}
         modifiers={modifiers}
         modifiersStyles={modifiersStyles}
-        className="rounded-md border"
+        className="rounded-lg border shadow-sm w-full"
         components={{
           DayContent: ({ date }) => {
             const dateStr = date.toISOString().split('T')[0];
             const mood = selectedMoods[dateStr];
             return (
-              <div className="relative w-full h-full flex items-center justify-center">
-                <span>{date.getDate()}</span>
+              <div className={`relative w-full h-full flex items-center justify-center rounded-md transition-colors ${mood ? moodColors[mood] : ''}`}>
+                <span className="text-sm font-medium">{date.getDate()}</span>
                 {mood && (
-                  <span className="absolute bottom-0 right-0 text-xs">
+                  <span className="absolute -bottom-1 -right-1 text-xs transform scale-75">
                     {moodEmojis[mood]}
                   </span>
                 )}
@@ -56,6 +68,14 @@ export default function Calendar({ onSelectDate, selectedMoods = {} }) {
           }
         }}
       />
+      <div className="mt-4 grid grid-cols-3 sm:grid-cols-5 gap-2">
+        {Object.entries(moodEmojis).map(([mood, emoji]) => (
+          <div key={mood} className={`px-2 py-1 rounded-full text-xs flex items-center gap-1 ${moodColors[mood]}`}>
+            <span>{emoji}</span>
+            <span className="capitalize">{mood}</span>
+          </div>
+        ))}
+      </div>
     </Card>
   );
 }

@@ -66,3 +66,35 @@ h1 {
 .tag:hover {
   background-color: #e2e8f0;
 }
+
+/* Calendar styles */
+.rdp {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+.rdp-months {
+  width: 100% !important;
+  justify-content: stretch !important;
+}
+
+.rdp-month {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+.rdp-table {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+.rdp-cell {
+  height: 45px !important;
+  width: calc(100% / 7) !important;
+}
+
+.rdp-day {
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 8px !important;
+}

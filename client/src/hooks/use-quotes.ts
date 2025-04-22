@@ -4,30 +4,60 @@ import { startOfDay } from 'date-fns';
 type Quote = {
   content: string;
   author: string;
-  source: string;
-  tags?: string[];
 };
 
 async function fetchQuote(source: 'random' | 'zen'): Promise<Quote> {
-  const response = await fetch(`/api/quotes/${source}`, {
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+  try {
+    const response = await fetch(`/api/quotes/${source}`, {
+      credentials: 'include',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Quote fetch error:', {
+        status: response.status,
+        statusText: response.statusText,
+        error: errorText
+      });
+      throw new Error(`Failed to fetch quote: ${response.status} ${response.statusText}`);
     }
-  });
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch quote');
+    const data = await response.json();
+    console.log('Quote data received:', data);
+    
+    if (!data || !data.content || !data.author) {
+      console.error('Invalid quote data:', data);
+      throw new Error('Invalid quote data received');
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Quote fetch error:', error);
+    throw error;
   }
-
-  return response.json();
 }
 
 export function useQuote(source: 'random' | 'zen' = 'random') {
-  return useQuery<Quote, Error>({
+  const query = useQuery<Quote, Error>({
     queryKey: ['quote', source, startOfDay(new Date()).toISOString()],
     queryFn: () => fetchQuote(source),
     staleTime: 24 * 60 * 60 * 1000, // 24 hours
-    cacheTime: 24 * 60 * 60 * 1000, // 24 hours
+    gcTime: 24 * 60 * 60 * 1000, // 24 hours
     refetchOnWindowFocus: false,
+    retry: 2,
+    retryDelay: 1000
   });
+
+  console.log('useQuote hook state:', {
+    data: query.data,
+    isLoading: query.isLoading,
+    isError: query.isError,
+    error: query.error?.message
+  });
+
+  return query;
 }

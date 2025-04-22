@@ -119,9 +119,63 @@ export default function MoodVisualizations() {
   }, [filteredEntries]);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
+      {/* Summary Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card className="bg-white">
+          <CardContent className="pt-6">
+            <div className="text-2xl font-bold text-gray-900">
+              {filteredEntries.length}
+            </div>
+            <p className="text-sm text-gray-500">Total Entries</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-white">
+          <CardContent className="pt-6">
+            <div className="text-2xl font-bold text-green-600">
+              {Math.round(
+                (filteredEntries.filter(e => e.mood === 'great' || e.mood === 'good').length /
+                  filteredEntries.length) *
+                  100
+              )}%
+            </div>
+            <p className="text-sm text-gray-500">Positive Moods</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-white">
+          <CardContent className="pt-6">
+            <div className="text-2xl font-bold text-blue-600">
+              {Object.entries(MOOD_VALUES)
+                .find(([mood]) =>
+                  Math.max(
+                    ...Object.entries(
+                      filteredEntries.reduce((acc, entry) => {
+                        acc[entry.mood] = (acc[entry.mood] || 0) + 1;
+                        return acc;
+                      }, {})
+                    ).map(([, count]) => count)
+                  )
+                )?.[0] || 'N/A'}
+            </div>
+            <p className="text-sm text-gray-500">Most Common Mood</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-white">
+          <CardContent className="pt-6">
+            <div className="text-2xl font-bold text-purple-600">
+              {Math.round(
+                filteredEntries.reduce((acc, entry) => acc + MOOD_VALUES[entry.mood], 0) /
+                  filteredEntries.length *
+                  10
+              ) / 10}
+            </div>
+            <p className="text-sm text-gray-500">Average Mood Score</p>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Main Controls Card */}
-      <Card className="p-4">
+      <Card className="p-6 bg-white shadow-lg">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Date Range Selection */}
           <div className="space-y-3">
@@ -244,11 +298,24 @@ export default function MoodVisualizations() {
       </Card>
 
       {/* Main Visualization */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Mood Trends and Distribution</CardTitle>
+      <Card className="bg-white shadow-lg">
+        <CardHeader className="border-b pb-6">
+          <div className="flex justify-between items-center">
+            <CardTitle>Mood Trends and Distribution</CardTitle>
+            <Select value={visualizationType} onValueChange={setVisualizationType}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select view" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="combined">Combined View</SelectItem>
+                <SelectItem value="line">Line Chart</SelectItem>
+                <SelectItem value="area">Area Chart</SelectItem>
+                <SelectItem value="bar">Bar Chart</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-6">
           <div className="h-[400px]">
             <ResponsiveContainer width="100%" height="100%">
               <ComposedChart data={chartData}>

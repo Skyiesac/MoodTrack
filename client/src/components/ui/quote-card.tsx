@@ -15,7 +15,7 @@ export function QuoteCard({ source = 'random', className, ...props }: QuoteCardP
     return (
       <Card className={cn("relative overflow-hidden", className)} {...props}>
         <CardContent className="p-4">
-          <p>Error loading quote.</p>
+          <p className="text-red-500">Error loading quote. Please try refreshing the page.</p>
         </CardContent>
       </Card>
     );
@@ -32,15 +32,17 @@ export function QuoteCard({ source = 'random', className, ...props }: QuoteCardP
               <div className="h-4 w-3/4 animate-pulse rounded-lg bg-muted" />
               <div className="h-4 w-1/2 animate-pulse rounded-lg bg-muted" />
             </div>
-          ) : (
+          ) : quote ? (
             <>
               <blockquote className="text-lg text-gray-800 font-medium">
-                "{quote?.content}"
+                "{quote.content}"
               </blockquote>
               <cite className="block text-right text-sm text-gray-600 not-italic mt-2">
-                — {quote?.author}
+                — {quote.author}
               </cite>
             </>
+          ) : (
+            <p className="text-gray-600">No quote available at the moment.</p>
           )}
         </div>
       </CardContent>

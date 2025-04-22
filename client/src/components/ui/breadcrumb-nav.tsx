@@ -18,19 +18,23 @@ export function BreadcrumbNav() {
   if (location.pathname === '/') return null;
 
   return (
-    <Breadcrumb className="py-4">
-      <BreadcrumbItem>
-        <Link to="/" className="text-sm font-medium text-muted-foreground hover:text-foreground">
-          Home
-        </Link>
-      </BreadcrumbItem>
-      {paths.map((path) => (
-        <BreadcrumbItem key={path}>
-          <ChevronRight className="h-4 w-4" />
-          <Link to={path} className="text-sm font-medium text-muted-foreground hover:text-foreground">
-            {pathToTitle[path] || path.split('/').pop()}
+    <Breadcrumb className="py-4 flex items-center space-x-2">
+      <div className="flex items-center">
+        <BreadcrumbItem>
+          <Link to="/" className="text-sm font-medium text-muted-foreground hover:text-foreground">
+            Home
           </Link>
         </BreadcrumbItem>
+      </div>
+      {paths.map((path) => (
+        <div key={path} className="flex items-center">
+          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          <BreadcrumbItem>
+            <Link to={path} className="text-sm font-medium text-muted-foreground hover:text-foreground ml-2">
+              {pathToTitle[path] || path.split('/').pop()}
+            </Link>
+          </BreadcrumbItem>
+        </div>
       ))}
     </Breadcrumb>
   );

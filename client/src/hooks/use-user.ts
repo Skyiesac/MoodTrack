@@ -60,43 +60,47 @@ async function handleRequest(
   }
 }
 
-async function fetchUser(): Promise<SelectUser | null> {
-  const response = await fetch('/api/user', {
-    credentials: 'include'
-  });
-
-  if (!response.ok) {
-    if (response.status === 401 || response.status === 403) {
-      return null;
-    }
-
-    if (response.status >= 500) {
-      throw new Error(`${response.status}: ${response.statusText}`);
-    }
-
-    throw new Error(`${response.status}: ${await response.text()}`);
-  }
-
-  return response.json();
-}
-
 export function useUser() {
   const queryClient = useQueryClient();
 
   const { data: user, error, isLoading } = useQuery<SelectUser | null, Error>({
     queryKey: ['user'],
-    queryFn: fetchUser,
+    queryFn: async () => {
+      try {
+        const response = await fetch('/api/user', {
+          credentials: 'include'
+        });
+        
+        if (response.status === 401 || response.status === 403) {
+          return null;
+        }
+        
+        if (!response.ok) {
+          throw new Error(`${response.status}: ${await response.text()}`);
+        }
+        
+        return response.json();
+      } catch (error) {
+        if (error instanceof Error && error.message.includes('401')) {
+          return null;
+        }
+        throw error;
+      }
+    },
     staleTime: Infinity,
-    retry: false
+    gcTime: Infinity,
+    retry: false,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchInterval: false
   });
 
-  const loginMutation = useMutation<RequestResult, Error, LoginCredentials>({
+  const loginMutation = useMutation<RequestResult & { data?: { user: SelectUser } }, Error, LoginCredentials>({
     mutationFn: (userData) => handleRequest('/api/login', 'POST', userData),
     onSuccess: (result) => {
       if (result.ok && result.data) {
         queryClient.setQueryData(['user'], result.data.user);
-        // Trigger a refetch of the user data to ensure we have the latest state
-        queryClient.invalidateQueries({ queryKey: ['user'] });
       }
     },
   });
@@ -105,17 +109,14 @@ export function useUser() {
     mutationFn: () => handleRequest('/api/logout', 'POST'),
     onSuccess: () => {
       queryClient.setQueryData(['user'], null);
-      queryClient.invalidateQueries({ queryKey: ['user'] });
     }
   });
 
-  const registerMutation = useMutation<RequestResult, Error, InsertUser>({
+  const registerMutation = useMutation<RequestResult & { data?: { user: SelectUser } }, Error, InsertUser>({
     mutationFn: (userData) => handleRequest('/api/register', 'POST', userData),
     onSuccess: (result) => {
       if (result.ok && result.data) {
         queryClient.setQueryData(['user'], result.data.user);
-        // Trigger a refetch of the user data to ensure we have the latest state
-        queryClient.invalidateQueries({ queryKey: ['user'] });
       }
     },
   });

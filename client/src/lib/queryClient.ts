@@ -3,28 +3,18 @@ import { QueryClient } from "@tanstack/react-query";
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      queryFn: async ({ queryKey }) => {
-        const res = await fetch(queryKey[0] as string, {
-          credentials: "include",
-        });
-
-        if (!res.ok) {
-          if (res.status >= 500) {
-            throw new Error(`${res.status}: ${res.statusText}`);
-          }
-
-          throw new Error(`${res.status}: ${await res.text()}`);
-        }
-
-        return res.json();
-      },
       refetchInterval: false,
       refetchOnWindowFocus: false,
-      staleTime: Infinity,
-      retry: false,
+      refetchOnMount: true,
+      refetchOnReconnect: false,
+      staleTime: 0,
+      retry: 1,
+      gcTime: 24 * 60 * 60 * 1000, // 24 hours
+      networkMode: 'online'
     },
     mutations: {
       retry: false,
+      networkMode: 'online'
     }
   },
 });

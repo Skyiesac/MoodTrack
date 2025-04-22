@@ -1,39 +1,46 @@
 import fetch from 'node-fetch';
 
-const BACKEND_URL = 'http://localhost:3002';
+const BACKEND_URL = 'http://127.0.0.1:3002/health';
 const MAX_RETRIES = 30;
-const RETRY_INTERVAL = 1000; // 1 second
+const RETRY_DELAY = 1000; // 1 second
 
-async function checkHealth() {
+async function checkBackend(retryCount = 1) {
   try {
-    const response = await fetch(`${BACKEND_URL}/health`);
-    const data = await response.json();
-    return data.status === 'healthy';
-  } catch (error) {
-    return false;
-  }
-}
-
-async function waitForBackend() {
-  console.log('Waiting for backend to be ready...');
-  
-  for (let i = 0; i < MAX_RETRIES; i++) {
-    const isHealthy = await checkHealth();
+    console.log(`Making request to ${BACKEND_URL}...`);
+    const response = await fetch(BACKEND_URL);
+    console.log(`Response status: ${response.status}`);
     
-    if (isHealthy) {
+    const text = await response.text();
+    console.log(`Response body: ${text}`);
+    
+    const data = JSON.parse(text);
+    console.log(`Parsed data:`, data);
+
+    if (data.status === 'healthy') {
       console.log('Backend is ready!');
-      process.exit(0);
+      
+      // Start frontend
+      const { spawn } = await import('child_process');
+      spawn('npm', ['run', 'dev:frontend'], { 
+        stdio: 'inherit',
+        shell: true 
+      });
+      return;
     }
     
-    console.log(`Attempt ${i + 1}/${MAX_RETRIES}: Backend not ready, retrying in ${RETRY_INTERVAL/1000}s...`);
-    await new Promise(resolve => setTimeout(resolve, RETRY_INTERVAL));
+    throw new Error(`Backend not healthy: ${data.status}`);
+  } catch (error) {
+    console.error(`Error details:`, error);
+
+    if (retryCount >= MAX_RETRIES) {
+      console.error('Backend failed to become ready in time');
+      process.exit(1);
+    }
+
+    console.log(`Attempt ${retryCount}/${MAX_RETRIES}: Backend not ready, retrying in 1s...`);
+    await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+    return checkBackend(retryCount + 1);
   }
-  
-  console.error('Backend failed to become ready in time');
-  process.exit(1);
 }
 
-waitForBackend().catch(error => {
-  console.error('Error while waiting for backend:', error);
-  process.exit(1);
-});
+checkBackend();

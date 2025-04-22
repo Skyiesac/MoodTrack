@@ -179,6 +179,40 @@ export function setupAuth(app: Express) {
     }
   });
 
+  // Get current user endpoint
+  app.get("/api/user", async (req, res) => {
+    try {
+      const token = req.cookies.auth_token;
+      
+      if (!token) {
+        return res.status(401).json({ message: "No token provided" });
+      }
+
+      const decoded = jwt.verify(token, JWT_SECRET) as { id: number; username: string };
+      const user = await User.findOne({
+        where: { id: decoded.id }
+      });
+
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      return res.json({
+        id: user.id,
+        username: user.username,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email
+      });
+    } catch (error) {
+      if (error instanceof jwt.JsonWebTokenError) {
+        return res.status(401).json({ message: "Invalid token" });
+      }
+      console.error('Get user error:', error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   // Logout endpoint
   app.post("/api/logout", (req, res) => {
     res.clearCookie('auth_token');

@@ -42,6 +42,17 @@ User.init({
   password: {
     type: DataTypes.STRING,
     allowNull: false
+  },
+  settings: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+    get() {
+      const rawValue = this.getDataValue('settings');
+      return rawValue ? JSON.parse(rawValue) : null;
+    },
+    set(value: any) {
+      this.setDataValue('settings', JSON.stringify(value));
+    }
   }
 }, {
   sequelize,

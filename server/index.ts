@@ -1,12 +1,13 @@
 import express from "express";
 import { registerRoutes } from "./routes";
-import { setupVite, serveStatic, log } from "./vite";
+import { setupVite, serveStatic } from "./vite";
 import sequelize from "./models/db";
 import dotenv from "dotenv";
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import csrf from 'csurf';
+import { setupAuth } from "./auth";
 
 // Load environment variables from .env file
 dotenv.config();
@@ -24,7 +25,7 @@ if (process.env.NODE_ENV === 'production') {
   }
 
   app.use(cors({
-    origin: process.env.CORS_ALLOWED_ORIGINS,
+    origin: true, // Allow all origins in development
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
@@ -32,60 +33,13 @@ if (process.env.NODE_ENV === 'production') {
   }));
 }
 
+// Parse cookies and JSON body before any routes
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Health check endpoint - must be before other routes
-app.get('/health', async (req, res) => {
-  try {
-    await sequelize.authenticate();
-    res.json({
-      status: 'healthy',
-      timestamp: new Date().toISOString(),
-      database: 'connected',
-      uptime: process.uptime()
-    });
-  } catch (error) {
-    res.status(503).json({
-      status: 'unhealthy',
-      timestamp: new Date().toISOString(),
-      database: 'disconnected',
-      error: error instanceof Error ? error.message : 'Unknown error'
-    });
-  }
-});
-
-// Request logging middleware
-app.use((req, res, next) => {
-  const start = Date.now();
-  const path = req.path;
-  let capturedJsonResponse: Record<string, any> | undefined = undefined;
-
-  const originalResJson = res.json;
-  res.json = function (bodyJson, ...args) {
-    capturedJsonResponse = bodyJson;
-    return originalResJson.apply(res, [bodyJson, ...args]);
-  };
-
-  res.on("finish", () => {
-    const duration = Date.now() - start;
-    if (path.startsWith("/api")) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-      if (capturedJsonResponse) {
-        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
-      }
-
-      if (logLine.length > 80) {
-        logLine = logLine.slice(0, 79) + "…";
-      }
-
-      log(logLine);
-    }
-  });
-
-  next();
-});
+// Enable pre-flight requests for all routes
+app.options('*', cors());
 
 // Error handling middleware
 const errorHandler = (err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
@@ -117,11 +71,16 @@ const errorHandler = (err: any, _req: express.Request, res: express.Response, _n
     await sequelize.authenticate();
     console.log('Database connection has been established successfully.');
 
+    // Register routes first (public endpoints like quotes)
     const server = registerRoutes(app);
+
+    // Setup auth routes and middleware
+    setupAuth(app);
 
     // Add error handling middleware last
     app.use(errorHandler);
 
+    // Setup Vite or static serving after creating server
     if (app.get("env") === "development") {
       await setupVite(app, server);
     } else {
@@ -129,9 +88,8 @@ const errorHandler = (err: any, _req: express.Request, res: express.Response, _n
     }
 
     const PORT = parseInt(process.env.PORT || '3002', 10);
-    const HOST = process.env.NODE_ENV === 'production' ? '0.0.0.0' : '127.0.0.1';
-    server.listen(PORT, HOST, () => {
-      log(`Server running on port ${PORT} in ${app.get("env")} mode`);
+    server.listen(PORT, '0.0.0.0', () => {
+      console.log(`Server running on port ${PORT} in ${app.get("env")} mode`);
     });
   } catch (error) {
     console.error('Failed to start server:', error);
