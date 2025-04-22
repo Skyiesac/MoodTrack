@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { InsertUser, SelectUser } from "@/types/schema";
+import type { InsertUser, SelectUser } from "../types/schema";
 
 type AuthResponse = {
   message: string;

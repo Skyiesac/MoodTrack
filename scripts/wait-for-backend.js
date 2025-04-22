@@ -1,4 +1,5 @@
-import fetch from 'node-fetch';
+const fetch = require('node-fetch');
+const { spawn } = require('child_process');
 
 const BACKEND_URL = 'http://127.0.0.1:3002/health';
 const MAX_RETRIES = 30;
@@ -20,7 +21,6 @@ async function checkBackend(retryCount = 1) {
       console.log('Backend is ready!');
       
       // Start frontend
-      const { spawn } = await import('child_process');
       spawn('npm', ['run', 'dev:frontend'], { 
         stdio: 'inherit',
         shell: true 

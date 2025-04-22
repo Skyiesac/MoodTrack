@@ -1,16 +1,17 @@
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "./components/ui/toaster";
 import { Loader2 } from "lucide-react";
-import JournalEntries from "@/pages/JournalEntries";
-import NewJournal from "@/pages/NewJournal";
-import NotFound from "@/pages/not-found";
-import AuthPage from "@/pages/auth-page";
-import SettingsPage from "@/pages/settings";
-import { useUser } from "@/hooks/use-user";
-import { UserAccountNav } from "@/components/ui/user-account-nav";
-import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
+import JournalEntries from "./pages/JournalEntries";
+import NewJournal from "./pages/NewJournal";
+import NotFound from "./pages/not-found";
+import AuthPage from "./pages/auth-page";
+import SettingsPage from "./pages/settings";
+import { useUser } from "./hooks/use-user";
+import { UserAccountNav } from "./components/ui/user-account-nav";
+import { BreadcrumbNav } from "./components/ui/breadcrumb-nav";
+import { Navigate } from "react-router-dom";
 import "./styles/App.css";
 import styles from "./styles/App.module.css";
 
@@ -18,9 +19,9 @@ function Router() {
   const { user, isLoading } = useUser();
   
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-gradient-to-b from-gray-100 to-gray-200">
       {isLoading ? (
-        <div className="min-h-screen flex flex-col items-center justify-center">
+        <div className="min-h-screen flex flex-col items-center justify-center bg-white">
           <div className="w-24 h-24 relative">
             <div className="absolute inset-0 rounded-full border-4 border-blue-100"></div>
             <Loader2 className="absolute inset-0 h-24 w-24 animate-spin text-blue-600" />
@@ -65,6 +66,7 @@ function Router() {
           <Route path="/" element={<JournalEntries />} />
           <Route path="/new" element={<NewJournal />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/signin" element={<Navigate to="/" replace />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

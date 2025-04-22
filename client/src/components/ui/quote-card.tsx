@@ -1,8 +1,8 @@
 import * as React from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "./card";
 import { Quote as QuoteIcon } from "lucide-react";
-import { useQuote } from "@/hooks/use-quotes";
-import { cn } from "@/lib/utils";
+import { useQuote } from "../../hooks/use-quotes";
+import { cn } from "../../lib/utils";
 
 interface QuoteCardProps extends React.HTMLAttributes<HTMLDivElement> {
   source?: 'random' | 'zen';

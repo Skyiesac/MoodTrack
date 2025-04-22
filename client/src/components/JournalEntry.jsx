@@ -1,4 +1,4 @@
-import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardContent } from "./ui/card";
 import { formatDate } from "../utils/formatDate";
 
 export default function JournalEntry({ entry }) {
@@ -19,10 +19,10 @@ export default function JournalEntry({ entry }) {
   };
 
   return (
-    <Card className="mb-4 hover:shadow-lg transition-shadow duration-200">
-      <CardHeader className="flex flex-row items-center justify-between pb-2 border-b">
+    <Card className="mb-4 hover:shadow-lg transition-shadow duration-200 bg-white border border-gray-100">
+      <CardHeader className="flex flex-row items-center justify-between pb-2 border-b border-gray-100">
         <div>
-          <div className="font-semibold text-lg text-gray-900">
+          <div className="font-semibold text-lg text-gray-800">
             {formatDate(entry.date)}
           </div>
           <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium mt-1 border ${moodColors[entry.mood]}`}>

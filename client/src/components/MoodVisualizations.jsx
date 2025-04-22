@@ -12,26 +12,26 @@ import {
   ComposedChart,
   Area,
 } from 'recharts';
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
 import { addDays, format, isWithinInterval, startOfDay, endOfDay, subDays, startOfMonth, endOfMonth, startOfYear, endOfYear } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
+import { cn } from "../lib/utils";
+import { Button } from "./ui/button";
+import { Calendar } from "./ui/calendar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from "./ui/popover";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+} from "./ui/select";
+import { Badge } from "./ui/badge";
+import { Tabs, TabsList, TabsTrigger } from "./ui/tabs";
 import { useState, useMemo } from 'react';
 
 const MOOD_COLORS = {
@@ -122,9 +122,9 @@ export default function MoodVisualizations() {
     <div className="space-y-6">
       {/* Summary Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="bg-white">
+        <Card className="bg-white border border-gray-100">
           <CardContent className="pt-6">
-            <div className="text-2xl font-bold text-gray-900">
+            <div className="text-2xl font-bold text-gray-800">
               {filteredEntries.length}
             </div>
             <p className="text-sm text-gray-500">Total Entries</p>

@@ -1,6 +1,6 @@
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "../components/ui/card";
 import { AlertCircle, Home, ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "../components/ui/button";
 import { useNavigate } from "react-router-dom";
 
 export default function NotFound() {

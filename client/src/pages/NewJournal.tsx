@@ -1,11 +1,11 @@
 import { useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import NewEntry from "../components/NewEntry";
-import { Button } from "@/components/ui/button";
+import { Button } from "../components/ui/button";
 import { ArrowLeft } from "lucide-react";
-import { api } from "@/utils/api";
-import { useUser } from "@/hooks/use-user";
-import { useToast } from "@/hooks/use-toast";
+import { api } from "../utils/api";
+import { useUser } from "../hooks/use-user";
+import { useToast } from "../hooks/use-toast";
 
 interface EntryData {
   mood: string;

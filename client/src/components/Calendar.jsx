@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { Calendar as CalendarUI } from "@/components/ui/calendar";
-import { Card } from "@/components/ui/card";
-import "../components/ui/calendar";
+import { Calendar as CalendarUI } from "./ui/calendar";
+import { Card } from "./ui/card";
 
 const moodEmojis = {
   great: "😄",
@@ -39,9 +38,9 @@ export default function Calendar({ onSelectDate, selectedMoods = {} }) {
   };
 
   return (
-    <Card className="p-6 bg-white shadow-lg h-full">
-      <div className="mb-4">
-        <h3 className="text-lg font-semibold text-gray-900">Mood Calendar</h3>
+    <Card className="p-6 bg-white shadow-lg h-full border border-gray-100">
+      <div className="mb-4 border-b pb-4">
+        <h3 className="text-lg font-semibold text-gray-800">Mood Calendar</h3>
         <p className="text-sm text-gray-500">Track your daily emotional journey</p>
       </div>
       <CalendarUI

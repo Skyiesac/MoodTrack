@@ -35,10 +35,10 @@ export default defineConfig({
     }
   },
   resolve: {
-    alias: {
-      "@db": path.resolve(__dirname, "db"),
-      "@": path.resolve(__dirname, "client", "src"),
-    },
+    alias: [
+      { find: '@', replacement: path.resolve(__dirname, 'client/src') },
+      { find: '@db', replacement: path.resolve(__dirname, 'db') }
+    ]
   },
   root: path.resolve(__dirname, "client"),
   server: {

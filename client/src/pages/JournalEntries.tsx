@@ -12,12 +12,12 @@ interface MoodsByDate {
   [key: string]: string;
 }
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Button } from "../components/ui/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "../components/ui/tabs";
 import Calendar from "../components/Calendar";
 import JournalEntry from "../components/JournalEntry";
 import MoodVisualizations from "../components/MoodVisualizations";
-import { QuoteCard } from "@/components/ui/quote-card";
+import { QuoteCard } from "../components/ui/quote-card";
 import { PlusCircle } from "lucide-react";
 
 export default function JournalEntries() {
@@ -67,13 +67,13 @@ export default function JournalEntries() {
     : entries;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-white">
       <div className="flex flex-col space-y-6">
         {/* Header Section */}
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center border-b pb-6">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Mood Journal</h1>
-            <p className="mt-1 text-sm text-gray-500">
+            <h1 className="text-3xl font-bold text-gray-800">Mood Journal</h1>
+            <p className="mt-1 text-sm text-gray-600">
               Track and reflect on your daily emotions
             </p>
           </div>

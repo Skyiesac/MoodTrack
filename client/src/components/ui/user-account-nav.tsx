@@ -1,17 +1,17 @@
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { Button } from "./button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+} from "./dropdown-menu";
+import { Avatar, AvatarFallback } from "./avatar";
 import { Settings, LogOut } from "lucide-react";
-import { useUser } from "@/hooks/use-user";
-import { api } from "@/utils/api";
-import { useToast } from "@/hooks/use-toast";
+import { useUser } from "../../hooks/use-user";
+import { api } from "../../utils/api";
+import { useToast } from "../../hooks/use-toast";
 
 export function UserAccountNav() {
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ export function UserAccountNav() {
   const handleLogout = async () => {
     try {
       await logout();
-      navigate('/signin');
+      navigate('/');
     } catch (error) {
       toast({
         variant: "destructive",
@@ -48,8 +48,8 @@ export function UserAccountNav() {
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-64 p-2" align="end" forceMount>
-        <div className="flex items-center gap-3 p-2 rounded-md hover:bg-gray-50">
+      <DropdownMenuContent className="w-64 p-2 bg-white shadow-lg border border-gray-200" align="end" forceMount>
+        <div className="flex items-center gap-3 p-2 rounded-md hover:bg-gray-100">
           <Avatar className="h-12 w-12 bg-gradient-to-br from-blue-500 to-blue-600">
             <AvatarFallback className="text-white font-medium text-lg">
               {user.firstName[0]}
