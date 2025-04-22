@@ -1,15 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { Navigate } from "react-router-dom";
 import "../styles/auth.css";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useUser } from "@/hooks/use-user";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { useToast } from "@/hooks/use-toast";
+import { useUser } from "../hooks/use-user";
+import { Button } from "../components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../components/ui/form";
+import { Input } from "../components/ui/input";
+import { useToast } from "../hooks/use-toast";
 import { z } from "zod"; // Import Zod for schema validation
-import type { InsertUser } from "@/types/schema";
+import type { InsertUser } from "../types/schema";
 
 // Define schemas for login and registration
 const loginSchema = z.object({
@@ -31,8 +32,13 @@ type FormData = LoginUser & Partial<RegisterUser>;
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
-  const { login, register } = useUser();
+  const { user, login, register } = useUser();
   const { toast } = useToast();
+
+  // Redirect to home if already logged in
+  if (user) {
+    return <Navigate to="/" replace />;
+  }
 
   const form = useForm<FormData>({
     resolver: zodResolver(isLogin ? loginSchema : registerSchema),
@@ -78,15 +84,15 @@ export default function AuthPage() {
         {/* Welcome Section */}
         <div className="hidden md:flex flex-col justify-center items-center text-white p-12">
           <div className="text-center">
-            <h1 className="text-5xl font-extrabold mb-8">Welcome to SoulSync</h1>
-            <p className="text-2xl font-semibold opacity-90 mt-4">
+            <h1 className="text-5xl font-extrabold mb-8 text-white drop-shadow-lg [text-shadow:_0_2px_4px_rgba(0,0,0,0.3)]">Welcome to SoulSync</h1>
+            <p className="text-2xl font-semibold text-white drop-shadow-md mt-4">
               Your personal space for reflection and growth
             </p>
           </div>
         </div>
 
         {/* Auth Card */}
-        <Card className="w-full max-w-md auth-card">
+        <Card className="w-full max-w-md auth-card bg-white backdrop-blur-none">
         <CardHeader className="space-y-2">
           <CardTitle className="text-2xl font-bold text-center">
             {isLogin ? "Welcome Back" : "Create Account"}
@@ -213,7 +219,7 @@ export default function AuthPage() {
                 )}
               />
               <div className="space-y-4">
-                <Button type="submit" className="w-full auth-button bg-gradient-to-r from-[#D5BDAF] to-[#B5838D] hover:from-[#C5AD9F] hover:to-[#A5737D] text-white">
+                <Button type="submit" className="w-full auth-button bg-gradient-to-r from-[#B5838D] to-[#8B4B57] hover:from-[#A5737D] hover:to-[#7B3B47] text-white font-semibold shadow-lg">
                   {isLogin ? "Sign In" : "Sign Up"}
                 </Button>
                 <div className="relative">
