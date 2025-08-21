@@ -1,4 +1,4 @@
-# SoulSync - Mood Tracking Application
+# Mood Tracking Application
 
 A full-stack application for tracking daily moods and journal entries.
 
@@ -15,7 +15,7 @@ A full-stack application for tracking daily moods and journal entries.
 Create a `.env` file in the root directory with the following variables:
 
 ```env
-# Database Configuration (Example format)
+# Database Configuration 
 DATABASE_URL=postgresql://username:password@host/database_name
 
 # Server Configuration
@@ -177,7 +177,3 @@ If you encounter issues during deployment:
    - If build fails: Check Node.js version (set to 18.x)
    - If runtime fails: Verify start command and working directory
    - Database errors: Check PostgreSQL connection and SSL settings
-
-## License
-
-MIT
